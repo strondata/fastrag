@@ -6,7 +6,7 @@ Esses modelos garantem que as configurações sejam bem-formadas, validadas e
 facilmente acessíveis no código.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, Field
 
@@ -44,14 +44,17 @@ class JobConfig(BaseModel):
     Define a configuração para um único Job no `pipeline.yml`.
     """
 
+    type: str = Field(
+        ..., description="O caminho completo para a classe do Job a ser instanciada."
+    )
     description: Optional[str] = None
     inputs: Dict[str, str] = Field(
         default_factory=dict,
         description="Mapeamento de nomes de entrada para nomes de DataSet no catálogo.",
     )
-    outputs: List[str] = Field(
-        default_factory=list,
-        description="Lista de nomes de saída que este job produz.",
+    outputs: Dict[str, str] = Field(
+        default_factory=dict,
+        description="Mapeamento de nomes de saída do job para nomes de DataSet no catálogo.",
     )
     params: Dict[str, Any] = Field(
         default_factory=dict,

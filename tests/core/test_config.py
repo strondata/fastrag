@@ -37,16 +37,20 @@ def test_load_pipeline_success(tmp_path: Path):
     description: "Um pipeline de exemplo."
     jobs:
       job_a:
+        type: "some.job.type"
         description: "Primeiro job."
         inputs:
           customers: "raw_customers"
-        outputs: ["intermediate_table"]
+        outputs:
+          output: "intermediate_table"
         params:
           param1: "value1"
       job_b:
+        type: "another.job.type"
         inputs:
           source_data: "intermediate_table"
-        outputs: ["final_output"]
+        outputs:
+          output: "final_output"
     """
     config_file = tmp_path / "pipeline.yml"
     config_file.write_text(content)
