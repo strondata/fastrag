@@ -3,7 +3,10 @@ name = "aether-framework"
 version = "0.1.0"
 description = "A self-service data engineering platform."
 requires-python = ">=3.9"
-dependencies = []
+dependencies = [
+    "pydantic",
+    "pyyaml",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -11,6 +14,7 @@ dev = [
     "ruff",
     "black",
     "mypy",
+    "types-PyYAML",
 ]
 
 [tool.black]
