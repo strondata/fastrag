@@ -1,0 +1,6 @@
+# Este arquivo define os proprietários do código para revisão de Pull Requests.
+# Use '*' para aplicar a todos os arquivos ou especifique caminhos.
+# Exemplo:
+# * @github-org/aether-maintainers
+
+*

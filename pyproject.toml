@@ -1,0 +1,32 @@
+[project]
+name = "aether-framework"
+version = "0.1.0"
+description = "A self-service data engineering platform."
+requires-python = ">=3.9"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "black",
+    "mypy",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "C90", "N"]
+ignore = ["E501"] # Ignorado porque o Black já cuida disso
+
+[tool.ruff]
+line-length = 88
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+pretty = true
