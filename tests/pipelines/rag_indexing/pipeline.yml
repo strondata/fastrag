@@ -1,0 +1,20 @@
+description: "Um pipeline que gera embeddings e os indexa em um índice FAISS."
+
+jobs:
+  create_embeddings:
+    type: aether.jobs.rag_jobs.EmbeddingJob
+    description: "Gera embeddings a partir dos documentos fonte."
+    inputs:
+      documents: source_documents
+    outputs:
+      embeddings: generated_embeddings
+    params:
+      model_name: "paraphrase-MiniLM-L6-v2" # Um modelo rápido para testes
+
+  build_index:
+    type: aether.jobs.rag_jobs.IndexingJob
+    description: "Adiciona os embeddings gerados ao índice FAISS."
+    inputs:
+      embeddings: generated_embeddings
+    outputs:
+      faiss_index: final_faiss_index

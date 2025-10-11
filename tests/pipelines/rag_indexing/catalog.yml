@@ -1,0 +1,22 @@
+datasets:
+  source_documents:
+    type: InMemoryDataSet
+    layer: raw
+    options:
+      initial_data:
+        - id: doc_1
+          text: "Aether é um framework de orquestração de dados."
+        - id: doc_2
+          text: "Ele é construído em Python e usa um motor orientado a metadados."
+        - id: doc_3
+          text: "A CLI permite executar e visualizar pipelines."
+
+  generated_embeddings:
+    type: InMemoryDataSet
+    layer: transient
+
+  final_faiss_index:
+    type: FaissDataSet
+    layer: curated
+    options:
+      path: "tests/output/rag_index/my_index" # O caminho base para o .faiss e .json
