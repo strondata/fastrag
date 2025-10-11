@@ -55,7 +55,7 @@ class AssetOrchestrator:
             g.add_node(dataset_name, type="dataset")
 
         for job_name, job_config in self.pipeline.jobs.items():
-            g.add_node(job_name, type="job", config=job_config)
+            g.add_node(job_name, type="job", config=job_config.model_dump())
 
             # Adiciona arestas de datasets de entrada para o job
             for input_name in job_config.inputs.values():
@@ -90,7 +90,8 @@ class AssetOrchestrator:
         for node_name in execution_order:
             node_data = self.graph.nodes[node_name]
             if node_data["type"] == "job":
-                self._execute_job(node_name, node_data["config"])
+                job_config = self.pipeline.jobs[node_name]
+                self._execute_job(node_name, job_config)
 
     def _execute_job(self, job_name: str, job_config):
         """Instancia e executa um único job."""

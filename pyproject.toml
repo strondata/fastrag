@@ -7,7 +7,12 @@ dependencies = [
     "pydantic",
     "pyyaml",
     "networkx",
+    "typer",
+    "rich",
 ]
+
+[project.scripts]
+aether = "aether.cli:main"
 
 [project.optional-dependencies]
 dev = [
