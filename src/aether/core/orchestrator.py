@@ -4,13 +4,18 @@ Ele constrói o DAG de um pipeline e executa os jobs na ordem correta.
 """
 
 import importlib
-from typing import Dict, Type
+import time
+from typing import Dict, Optional, Type
 
 import networkx as nx
 
 from aether.core.factory import DataSetFactory
 from aether.core.interfaces import AbstractJob, IDataSet
+from aether.core.logger import get_logger, log_context
 from aether.core.models import CatalogConfig, PipelineConfig
+from aether.core.quality import IQualityValidator, QualityCheckError, QualityValidatorFactory
+
+logger = get_logger(__name__)
 
 
 class OrchestratorError(Exception):
@@ -44,10 +49,22 @@ class AssetOrchestrator:
         self.catalog = catalog_config
         self._dataset_factory = DataSetFactory()
         self._instance_cache: Dict[str, IDataSet] = {}
+        self._quality_factory = QualityValidatorFactory()
+        self._quality_cache: Dict[str, Optional[IQualityValidator]] = {}
+        
+        logger.info(
+            "orchestrator_initialized",
+            pipeline_description=pipeline_config.description,
+            num_jobs=len(pipeline_config.jobs),
+            num_datasets=len(catalog_config.datasets),
+        )
+        
         self.graph = self._build_graph()
 
     def _build_graph(self) -> nx.DiGraph:
         """Constrói um grafo de dependências a partir das configurações."""
+        logger.debug("dag_build_started")
+        
         g = nx.DiGraph()
 
         # Adiciona nós para todos os datasets e jobs
@@ -60,6 +77,11 @@ class AssetOrchestrator:
             # Adiciona arestas de datasets de entrada para o job
             for input_name in job_config.inputs.values():
                 if not g.has_node(input_name):
+                    logger.error(
+                        "missing_dataset_reference",
+                        job=job_name,
+                        missing_dataset=input_name,
+                    )
                     raise OrchestratorError(
                         f"Dataset '{input_name}' usado no job '{job_name}' não foi definido no catálogo."
                     )
@@ -68,67 +90,158 @@ class AssetOrchestrator:
             # Adiciona arestas do job para os datasets de saída
             for dataset_name in job_config.outputs.values():
                 if not g.has_node(dataset_name):
+                    logger.error(
+                        "missing_dataset_reference",
+                        job=job_name,
+                        missing_dataset=dataset_name,
+                    )
                     raise OrchestratorError(
                         f"Dataset '{dataset_name}' usado no job '{job_name}' não foi definido no catálogo."
                     )
                 g.add_edge(job_name, dataset_name)
 
         if not nx.is_directed_acyclic_graph(g):
+            logger.error("cyclic_dependency_detected")
             raise OrchestratorError("O pipeline contém um ciclo de dependências.")
 
+        logger.info(
+            "dag_built",
+            num_nodes=len(g.nodes),
+            num_edges=len(g.edges),
+        )
+        
         return g
 
     def run(self):
         """Executa o pipeline completo na ordem topológica."""
         execution_order = list(nx.topological_sort(self.graph))
+        
+        # Count jobs for metrics
+        job_nodes = [n for n in execution_order if self.graph.nodes[n]["type"] == "job"]
+        
+        logger.info(
+            "pipeline_execution_started",
+            total_jobs=len(job_nodes),
+            execution_order=execution_order,
+        )
 
         print("--- Ordem de Execução do Pipeline ---")
         for node in execution_order:
             print(f"- {node} ({self.graph.nodes[node]['type']})")
         print("------------------------------------")
-
-        for node_name in execution_order:
-            node_data = self.graph.nodes[node_name]
-            if node_data["type"] == "job":
-                job_config = self.pipeline.jobs[node_name]
-                self._execute_job(node_name, job_config)
+        
+        pipeline_start = time.time()
+        
+        try:
+            for node_name in execution_order:
+                node_data = self.graph.nodes[node_name]
+                if node_data["type"] == "job":
+                    job_config = self.pipeline.jobs[node_name]
+                    self._execute_job(node_name, job_config)
+            
+            pipeline_duration = time.time() - pipeline_start
+            logger.info(
+                "pipeline_execution_completed",
+                duration_seconds=round(pipeline_duration, 2),
+                jobs_executed=len(job_nodes),
+            )
+        except Exception as e:
+            pipeline_duration = time.time() - pipeline_start
+            logger.error(
+                "pipeline_execution_failed",
+                duration_seconds=round(pipeline_duration, 2),
+                error=str(e),
+                error_type=type(e).__name__,
+            )
+            raise
 
     def _execute_job(self, job_name: str, job_config):
         """Instancia e executa um único job."""
         print(f"\n>>> Iniciando execução do Job: {job_name}")
-
-        # Instancia a classe do Job
-        job_class = _import_class(job_config.type)
-        job_instance: AbstractJob = job_class(name=job_name, params=job_config.params)
-
-        # Prepara os IDataSets de entrada
-        input_datasets = {
-            local_name: self._get_or_create_dataset(catalog_name)
-            for local_name, catalog_name in job_config.inputs.items()
-        }
-
-        # Executa o job
-        output_data = job_instance.run(**input_datasets)
-
-        # Salva os IDataSets de saída
-        if len(job_config.outputs) != len(output_data):
-            raise OrchestratorError(
-                f"O job '{job_name}' produziu {len(output_data)} saídas, mas {len(job_config.outputs)} foram declaradas."
+        
+        with log_context(job=job_name):
+            logger.info(
+                "job_started",
+                job_type=job_config.type,
+                num_inputs=len(job_config.inputs),
+                num_outputs=len(job_config.outputs),
             )
+            
+            job_start = time.time()
+            
+            try:
+                # Instancia a classe do Job
+                job_class = _import_class(job_config.type)
+                job_instance: AbstractJob = job_class(name=job_name, params=job_config.params)
 
-        for job_output_name, dataset_name in job_config.outputs.items():
-            if job_output_name not in output_data:
-                raise OrchestratorError(
-                    f"O job '{job_name}' deveria produzir a saída '{job_output_name}', mas não o fez."
+                # Prepara os IDataSets de entrada
+                input_datasets = {
+                    local_name: self._get_or_create_dataset(catalog_name)
+                    for local_name, catalog_name in job_config.inputs.items()
+                }
+                
+                logger.debug(
+                    "job_inputs_loaded",
+                    input_datasets=list(job_config.inputs.values()),
                 )
 
-            output_dataset = self._get_or_create_dataset(dataset_name)
-            output_dataset.save(output_data[job_output_name])
-            print(
-                f"Saída '{job_output_name}' salva no dataset '{dataset_name}' com sucesso."
-            )
+                # Executa o job
+                output_data = job_instance.run(**input_datasets)
 
-        print(f"<<< Execução do Job '{job_name}' concluída.")
+                # Salva os IDataSets de saída
+                if len(job_config.outputs) != len(output_data):
+                    logger.error(
+                        "job_output_mismatch",
+                        expected_outputs=len(job_config.outputs),
+                        actual_outputs=len(output_data),
+                    )
+                    raise OrchestratorError(
+                        f"O job '{job_name}' produziu {len(output_data)} saídas, mas {len(job_config.outputs)} foram declaradas."
+                    )
+
+                for job_output_name, dataset_name in job_config.outputs.items():
+                    if job_output_name not in output_data:
+                        logger.error(
+                            "missing_job_output",
+                            expected_output=job_output_name,
+                            available_outputs=list(output_data.keys()),
+                        )
+                        raise OrchestratorError(
+                            f"O job '{job_name}' deveria produzir a saída '{job_output_name}', mas não o fez."
+                        )
+
+                    with log_context(dataset=dataset_name):
+                        output_dataset = self._get_or_create_dataset(dataset_name)
+                        data_to_save = output_data[job_output_name]
+                        self._validate_output(dataset_name, data_to_save)
+                        output_dataset.save(data_to_save)
+                        
+                        logger.info(
+                            "dataset_saved",
+                            output_name=job_output_name,
+                        )
+                        
+                        print(
+                            f"Saída '{job_output_name}' salva no dataset '{dataset_name}' com sucesso."
+                        )
+
+                job_duration = time.time() - job_start
+                logger.info(
+                    "job_completed",
+                    duration_seconds=round(job_duration, 2),
+                )
+                
+                print(f"<<< Execução do Job '{job_name}' concluída.")
+                
+            except Exception as e:
+                job_duration = time.time() - job_start
+                logger.error(
+                    "job_failed",
+                    duration_seconds=round(job_duration, 2),
+                    error=str(e),
+                    error_type=type(e).__name__,
+                )
+                raise
 
     def _get_or_create_dataset(self, name: str) -> IDataSet:
         """Obtém um dataset do cache ou cria um novo se não existir."""
@@ -137,6 +250,38 @@ class AssetOrchestrator:
                 name, self.catalog
             )
         return self._instance_cache[name]
+
+    def _get_quality_validator(self, dataset_name: str) -> Optional[IQualityValidator]:
+        """Recupera (com cache) o validador de qualidade associado ao dataset."""
+        if dataset_name not in self._quality_cache:
+            dataset_config = self.catalog.datasets.get(dataset_name)
+            if not dataset_config:
+                raise OrchestratorError(
+                    f"Dataset '{dataset_name}' não encontrado no catálogo durante a validação de qualidade."
+                )
+            validator = self._quality_factory.resolve(dataset_name, dataset_config)
+            self._quality_cache[dataset_name] = validator
+        return self._quality_cache[dataset_name]
+
+    def _validate_output(self, dataset_name: str, data) -> None:
+        """Executa a validação de qualidade, se configurada."""
+        validator = self._get_quality_validator(dataset_name)
+        if not validator:
+            logger.debug("quality_validation_skipped", reason="no_validator_configured")
+            return
+
+        try:
+            logger.debug("quality_validation_started")
+            validator.validate(data)
+            logger.info("quality_validation_passed")
+        except QualityCheckError as exc:
+            logger.error(
+                "quality_validation_failed",
+                error=str(exc),
+            )
+            raise QualityCheckError(
+                f"Falha na validação de qualidade para o dataset '{dataset_name}': {exc}"
+            ) from exc
 
     @property
     def instance_cache(self) -> Dict[str, IDataSet]:

@@ -11,6 +11,19 @@ from typing import Any, Dict, Optional
 from pydantic import BaseModel, Field
 
 
+class QualityValidatorConfig(BaseModel):
+    """Configuração para um validador de qualidade de dados."""
+
+    type: str = Field(
+        ...,
+        description="O tipo de validador de qualidade (ex: PanderaValidator).",
+    )
+    options: Dict[str, Any] = Field(
+        default_factory=dict,
+        description="Parâmetros específicos do validador de qualidade.",
+    )
+
+
 class DataSetConfig(BaseModel):
     """
     Define a configuração para um único DataSet no `catalog.yml`.
@@ -26,6 +39,10 @@ class DataSetConfig(BaseModel):
     options: Dict[str, Any] = Field(
         default_factory=dict,
         description="Parâmetros de configuração específicos para o tipo de DataSet (ex: path, table_name).",
+    )
+    quality: Optional[QualityValidatorConfig] = Field(
+        default=None,
+        description="Configuração opcional para validação de qualidade dos dados.",
     )
 
 

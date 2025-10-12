@@ -35,3 +35,22 @@ class ConcatJob(AbstractJob):
 
         output_data = str_a + str_b
         return {"output_str": output_data}
+
+
+class CreateDataFrameJob(AbstractJob):
+    """Constrói um DataFrame pandas a partir dos dados informados nos parâmetros."""
+
+    def _execute(self, **loaded_inputs: Any) -> Dict[str, Any]:
+        try:
+            import pandas as pd  # type: ignore[import-not-found]
+        except ImportError as exc:  # pragma: no cover - depende de instalação opcional
+            raise RuntimeError(
+                "O job CreateDataFrameJob requer a dependência opcional 'pandas'."
+            ) from exc
+
+        data = self.params.get("data")
+        if data is None:
+            raise ValueError("O parâmetro 'data' é obrigatório para CreateDataFrameJob.")
+
+        dataframe = pd.DataFrame(data)
+        return {"dataframe": dataframe}

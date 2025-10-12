@@ -1,6 +1,27 @@
-# Este arquivo define os proprietários do código para revisão de Pull Requests.
-# Use '*' para aplicar a todos os arquivos ou especifique caminhos.
-# Exemplo:
-# * @github-org/aether-maintainers
+# Code owners for Aether Framework
+# These owners will be requested for review when someone opens a pull request
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
-*
+# Default owners for everything in the repo
+*       @strondata/aether-core-team
+
+# Core framework components (require careful review)
+/src/aether/core/           @strondata/aether-core-team
+/src/aether/cli.py          @strondata/aether-core-team
+
+# Documentation
+/README.md                  @strondata/aether-core-team
+/CONTRIBUTING.md            @strondata/aether-core-team
+/design/                    @strondata/aether-core-team
+
+# CI/CD and infrastructure
+/.github/                   @strondata/aether-core-team
+/Makefile                   @strondata/aether-core-team
+/pyproject.toml             @strondata/aether-core-team
+
+# Tests (can be reviewed by broader team)
+/tests/                     @strondata/aether-contributors
+
+# DataSets and Jobs (can be reviewed by broader team)
+/src/aether/datasets/       @strondata/aether-contributors
+/src/aether/jobs/           @strondata/aether-contributors

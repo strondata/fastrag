@@ -1,10 +1,11 @@
+import os
 from pathlib import Path
 
 from typer.testing import CliRunner
 
 from aether.cli import app
 
-runner = CliRunner()
+runner = CliRunner(env={"AETHER_LOG_LEVEL": "CRITICAL"})  # Suppress logs in tests
 
 
 def test_rag_indexing_pipeline_e2e(tmp_path: Path):

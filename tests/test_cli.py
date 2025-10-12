@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 
 from typer.testing import CliRunner
@@ -11,7 +12,7 @@ from aether.cli import app
 # Por enquanto, vamos contar com o comportamento do pytest.
 
 
-runner = CliRunner()
+runner = CliRunner(env={"AETHER_LOG_LEVEL": "CRITICAL"})  # Suppress logs in tests
 
 
 def test_cli_run_success(test_pipeline_path: Path):
