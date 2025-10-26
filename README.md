@@ -159,6 +159,40 @@ pytest --cov=rag_chatbot --cov-report=html
 # O relatório HTML será gerado em htmlcov/index.html
 ```
 
+### Cobertura Atual
+
+**62.70% de cobertura de código** com 72+ testes passando!
+
+- ✅ `core.py`: 100%
+- ✅ `config.py`: 100%
+- ✅ `components/embedders.py`: 100%
+- ✅ `components/vector_stores.py`: 95.45%
+- ✅ `components/loaders.py`: 90.16%
+- ✅ `components/llms.py`: 83.33%
+
+Ver [documentação completa de testes](docs/wiki/Testing.md) para mais detalhes.
+
+## 📚 Documentação Completa
+
+### Wiki Abrangente
+
+Criamos uma wiki completa em `docs/wiki/` com documentação detalhada:
+
+- **[Home](docs/wiki/Home.md)** - Visão geral do projeto
+- **[Quick Start](docs/wiki/Quick-Start.md)** - Guia rápido de início
+- **[Architecture](docs/wiki/Architecture.md)** - Arquitetura e princípios SOLID
+- **[Components](docs/wiki/Components.md)** - Referência completa de componentes
+- **[Testing](docs/wiki/Testing.md)** - Guia de testes e cobertura (62.70%)
+- **[Advanced Features](docs/wiki/Advanced-Features.md)** - Técnicas avançadas de RAG
+
+### Recursos Destacados
+
+- ✅ **62.70% de cobertura de testes** (72+ testes passando)
+- ✅ **Documentação completa** com exemplos de código
+- ✅ **Guias de arquitetura** explicando princípios SOLID
+- ✅ **Referência de API** para todos os componentes
+- ✅ **Tutoriais avançados** sobre técnicas de RAG
+
 ## 🐳 Docker
 
 ### Executar com Docker Compose
