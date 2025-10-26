@@ -161,6 +161,27 @@ class TestMockLLM:
         response = llm.generate("Qualquer prompt")
         
         assert response == custom_response
+    
+    def test_generate_with_images(self):
+        """Testa geração com imagens (multimodal)."""
+        llm = MockLLM()
+        
+        # Simular imagens em base64
+        images_base64 = ["base64_image_1", "base64_image_2"]
+        
+        response = llm.generate("Pergunta com imagens", images_base64=images_base64)
+        
+        # Mock LLM deve retornar resposta padrão independente das imagens
+        assert response == "Esta é uma resposta mock do LLM."
+    
+    def test_generate_without_images(self):
+        """Testa geração sem imagens (compatibilidade retroativa)."""
+        llm = MockLLM()
+        
+        # Deve funcionar sem o parâmetro images_base64
+        response = llm.generate("Pergunta sem imagens")
+        
+        assert response == "Esta é uma resposta mock do LLM."
 
 
 class TestIntegration:
