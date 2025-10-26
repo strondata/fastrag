@@ -2,8 +2,8 @@
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-from rag_chatbot.components.vector_stores import ChromaVectorStore
-from rag_chatbot.interfaces import Documento
+from src.rag_chatbot.components.vector_stores import ChromaVectorStore
+from src.rag_chatbot.interfaces import Documento
 
 
 class TestChromaVectorStore:

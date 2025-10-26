@@ -3,10 +3,10 @@
 import pytest
 from unittest.mock import Mock, MagicMock
 import time
-from rag_chatbot.tools import BaseTool, RAGTool, CalculatorTool, MockSearchTool
-from rag_chatbot.agent import Agent
-from rag_chatbot.memory import MemoryStream, Memory
-from rag_chatbot.interfaces import Documento
+from src.rag_chatbot.agents.tools import BaseTool, RAGTool, CalculatorTool, MockSearchTool
+from src.rag_chatbot.agents.agent import Agent
+from src.rag_chatbot.agents.memory import MemoryStream, Memory
+from src.rag_chatbot.interfaces import Documento
 
 
 class TestBaseTool:

@@ -2,7 +2,7 @@
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-from rag_chatbot.components.llms import OllamaLLM, MockLLM
+from src.rag_chatbot.components.llms import OllamaLLM, MockLLM
 
 
 class TestOllamaLLM:

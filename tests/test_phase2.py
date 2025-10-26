@@ -2,10 +2,10 @@
 
 import pytest
 from unittest.mock import Mock, MagicMock
-from rag_chatbot.query_transform import QueryTransformer
-from rag_chatbot.reranking import CrossEncoderReRanker, MockReRanker
-from rag_chatbot.compression import PromptCompressor
-from rag_chatbot.interfaces import Documento
+from src.rag_chatbot.advanced_rag.query_transform import QueryTransformer
+from src.rag_chatbot.advanced_rag.reranking import CrossEncoderReRanker, MockReRanker
+from src.rag_chatbot.advanced_rag.compression import PromptCompressor
+from src.rag_chatbot.interfaces import Documento
 
 
 class TestQueryTransformer:

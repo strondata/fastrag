@@ -2,11 +2,11 @@
 
 import pytest
 from unittest.mock import Mock, MagicMock
-from rag_chatbot.base import BaseComponent, BaseChunker, BaseRetriever, BaseReRanker, BaseGenerator
-from rag_chatbot.pipeline import Pipeline
-from rag_chatbot.chunking import SemanticChunker, split_into_sentences, cosine_similarity
-from rag_chatbot.retrieval import HybridRetriever, VectorRetriever, BM25Retriever
-from rag_chatbot.interfaces import Documento
+from src.rag_chatbot.base import BaseComponent, BaseChunker, BaseRetriever, BaseReRanker, BaseGenerator
+from src.rag_chatbot.orchestration.pipeline import Pipeline
+from src.rag_chatbot.advanced_rag.chunking import SemanticChunker, split_into_sentences, cosine_similarity
+from src.rag_chatbot.advanced_rag.retrieval import HybridRetriever, VectorRetriever, BM25Retriever
+from src.rag_chatbot.interfaces import Documento
 
 
 class TestBaseComponent:

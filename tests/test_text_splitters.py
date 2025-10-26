@@ -1,8 +1,8 @@
 """Testes para text splitters."""
 
 import pytest
-from rag_chatbot.components.text_splitters import RecursiveCharacterTextSplitter
-from rag_chatbot.interfaces import Documento
+from src.rag_chatbot.components.text_splitters import RecursiveCharacterTextSplitter
+from src.rag_chatbot.interfaces import Documento
 
 
 class TestRecursiveCharacterTextSplitter:

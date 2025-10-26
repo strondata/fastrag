@@ -5,8 +5,8 @@ import tempfile
 import shutil
 from pathlib import Path
 
-from rag_chatbot.components.loaders import UniversalLoader, FolderLoader
-from rag_chatbot.interfaces import Documento
+from src.rag_chatbot.components.loaders import UniversalLoader, FolderLoader
+from src.rag_chatbot.interfaces import Documento
 
 
 class TestUniversalLoader:
