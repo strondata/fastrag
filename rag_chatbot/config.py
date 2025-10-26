@@ -30,6 +30,13 @@ DEFAULT_COLLECTION_NAME = os.getenv("DEFAULT_COLLECTION_NAME", "rag_store")
 # RAG Settings
 DEFAULT_TOP_K = int(os.getenv("DEFAULT_TOP_K", "3"))
 
+# Text Splitting
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "1000"))
+CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "200"))
+
+# Multimodal
+DEFAULT_MULTIMODAL_LLM_MODEL = os.getenv("DEFAULT_MULTIMODAL_LLM_MODEL", "llava")
+
 # Logging
 LOG_LEVEL_STR = os.getenv("LOG_LEVEL", "INFO")
 LOG_LEVEL = getattr(logging, LOG_LEVEL_STR.upper(), logging.INFO)

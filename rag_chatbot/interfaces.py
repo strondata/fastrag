@@ -92,15 +92,32 @@ class IVectorStore(ABC):
         pass
 
 
+class ITextSplitter(ABC):
+    """Interface para divisão de documentos em chunks."""
+    
+    @abstractmethod
+    def split_documents(self, docs: List[Documento]) -> List[Documento]:
+        """Divide documentos em chunks menores.
+        
+        Args:
+            docs: Lista de documentos a dividir.
+            
+        Returns:
+            Lista de documentos divididos (chunks).
+        """
+        pass
+
+
 class ILocalLLM(ABC):
     """Interface para modelos de linguagem locais."""
     
     @abstractmethod
-    def generate(self, prompt: str) -> str:
+    def generate(self, prompt: str, images_base64: List[str] = None) -> str:
         """Gera texto a partir de um prompt.
         
         Args:
             prompt: O prompt para geração.
+            images_base64: Lista de imagens em base64 (opcional, para modelos multimodais).
             
         Returns:
             Texto gerado pelo modelo.
