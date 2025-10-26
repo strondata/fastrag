@@ -1,11 +1,12 @@
 """Implementações de Vector Stores."""
 
 import logging
+import hashlib
 from typing import List
 import chromadb
 
 from rag_chatbot.interfaces import IVectorStore, Documento
-from rag_chatbot.config import DEFAULT_COLLECTION_NAME
+from rag_chatbot.config import DEFAULT_COLLECTION_NAME, CHROMA_PERSIST_DIRECTORY
 
 logger = logging.getLogger(__name__)
 
@@ -21,27 +22,45 @@ class ChromaVectorStore(IVectorStore):
         
         Args:
             collection_name: Nome da coleção no ChromaDB.
-            persist_directory: Diretório para persistir dados (None = in-memory).
+            persist_directory: Diretório para persistir dados (None = usa default do config).
         """
         logger.info(f"Inicializando ChromaDB com coleção '{collection_name}'")
         
+        # Use o diretório de persistência do config se não for especificado
+        if persist_directory is None:
+            persist_directory = str(CHROMA_PERSIST_DIRECTORY)
+        
         if persist_directory:
             self.client = chromadb.PersistentClient(path=persist_directory)
+            logger.info(f"ChromaDB em modo persistente: {persist_directory}")
         else:
             self.client = chromadb.Client()
+            logger.info("ChromaDB em modo in-memory")
         
-        # Deletar coleção existente se houver para evitar conflitos
-        try:
-            self.client.delete_collection(name=collection_name)
-        except:
-            pass
-            
-        self.collection = self.client.create_collection(name=collection_name)
-        self._doc_counter = 0
+        # Usar get_or_create_collection em vez de deletar e criar
+        self.collection = self.client.get_or_create_collection(name=collection_name)
         logger.info(f"Coleção ChromaDB '{collection_name}' pronta.")
     
+    def _generate_doc_id(self, document: Documento) -> str:
+        """Gera um ID único baseado no hash do conteúdo e metadados do documento.
+        
+        Args:
+            document: Documento para gerar ID.
+            
+        Returns:
+            ID único como string.
+        """
+        # Criar hash baseado no caminho do arquivo se disponível, caso contrário do conteúdo
+        if 'path' in document.metadata:
+            content_to_hash = document.metadata['path']
+        else:
+            content_to_hash = document.content[:500]  # Primeiros 500 chars para hash
+        
+        hash_obj = hashlib.md5(content_to_hash.encode('utf-8'))
+        return f"doc_{hash_obj.hexdigest()}"
+    
     def add(self, documents: List[Documento], embeddings: List[List[float]]) -> None:
-        """Adiciona documentos e seus embeddings ao store.
+        """Adiciona documentos e seus embeddings ao store usando upsert.
         
         Args:
             documents: Lista de documentos.
@@ -51,23 +70,22 @@ class ChromaVectorStore(IVectorStore):
             logger.warning("Nenhum documento para adicionar.")
             return
         
-        # Gerar IDs únicos para os documentos
-        ids = [f"doc_{self._doc_counter + i}" for i in range(len(documents))]
-        self._doc_counter += len(documents)
+        # Gerar IDs únicos baseados em hash dos documentos
+        ids = [self._generate_doc_id(doc) for doc in documents]
         
         # Extrair metadados e conteúdos
         metadatas = [doc.metadata for doc in documents]
         contents = [doc.content for doc in documents]
         
-        # Adicionar à coleção
-        self.collection.add(
+        # Usar upsert em vez de add para evitar duplicatas
+        self.collection.upsert(
             embeddings=embeddings,
             documents=contents,
             metadatas=metadatas,
             ids=ids
         )
         
-        logger.info(f"{len(documents)} documentos adicionados ao RAG.")
+        logger.info(f"{len(documents)} documentos adicionados/atualizados no RAG.")
     
     def search(self, query_embedding: List[float], k: int) -> List[Documento]:
         """Busca os k documentos mais similares ao query embedding.

@@ -145,19 +145,89 @@ pytest tests/test_components.py
 
 # Com verbosidade
 pytest -v
+```
 
-# Com cobertura
+### Executar Testes com Cobertura
+
+```bash
+# Gerar relatório de cobertura
 pytest --cov=rag_chatbot
+
+# Gerar relatório HTML detalhado
+pytest --cov=rag_chatbot --cov-report=html
+
+# O relatório HTML será gerado em htmlcov/index.html
+```
+
+## 🐳 Docker
+
+### Executar com Docker Compose
+
+A maneira mais fácil de rodar a aplicação completa (incluindo Ollama):
+
+```bash
+# Iniciar todos os serviços
+docker-compose up -d
+
+# Baixar modelo no container Ollama
+docker exec -it fastrag-ollama ollama pull llama3
+
+# Verificar logs
+docker-compose logs -f app
+
+# Parar serviços
+docker-compose down
+```
+
+A aplicação estará disponível em `http://localhost:8501`
+
+### Construir Apenas a Aplicação
+
+```bash
+# Construir imagem
+docker build -t fastrag-app .
+
+# Executar (assumindo Ollama já rodando)
+docker run -p 8501:8501 \
+  -v $(pwd)/data:/app/data \
+  -v $(pwd)/chroma_data:/app/chroma_data \
+  -e OLLAMA_HOST=http://host.docker.internal:11434 \
+  fastrag-app
 ```
 
 ## 🔧 Configuração Avançada
 
+### Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz do projeto (use `.env.example` como template):
+
+```bash
+# Copiar exemplo
+cp .env.example .env
+
+# Editar conforme necessário
+nano .env
+```
+
+Configurações disponíveis:
+
+- `DEFAULT_LLM_MODEL`: Modelo LLM padrão (default: `llama3`)
+- `OLLAMA_HOST`: URL do servidor Ollama (default: `http://localhost:11434`)
+- `DEFAULT_EMBEDDING_MODEL`: Modelo de embedding (default: `all-MiniLM-L6-v2`)
+- `DATA_DIR`: Diretório de dados (default: `./data`)
+- `LOGS_DIR`: Diretório de logs (default: `./logs`)
+- `CHROMA_PERSIST_DIRECTORY`: Diretório do ChromaDB (default: `./chroma_data`)
+- `DEFAULT_COLLECTION_NAME`: Nome da coleção (default: `rag_store`)
+- `DEFAULT_TOP_K`: Número de documentos a recuperar (default: `3`)
+- `LOG_LEVEL`: Nível de log (default: `INFO`)
+
 ### Personalizar Modelo LLM
 
-Edite `rag_chatbot/config.py`:
+Via variável de ambiente:
 
-```python
-DEFAULT_LLM_MODEL = "mistral"  # ou outro modelo
+```bash
+export DEFAULT_LLM_MODEL="mistral"
+streamlit run app.py
 ```
 
 Ou configure na interface do Streamlit.
@@ -248,6 +318,38 @@ ollama pull llama3
 ### Logs
 
 Verifique os logs em `./logs/rag_chatbot.log` para debugging detalhado.
+
+### Persistência de Dados
+
+Os dados do RAG são automaticamente salvos no diretório `./chroma_data/` e persistem entre reinicializações. Para limpar e recomeçar:
+
+```bash
+rm -rf ./chroma_data
+```
+
+## 🆕 Novidades v2.0
+
+### Configuração via Variáveis de Ambiente
+- Suporte a arquivo `.env` para configuração
+- Não mais hardcoded - todas as configurações são customizáveis
+- Persistência real do ChromaDB entre reinicializações
+
+### Interface Melhorada
+- UI reorganizada em abas: Chat, Gerenciar RAG, Ajuda
+- Visualização de fontes utilizadas em cada resposta
+- Inspeção de fontes sem chamar o LLM
+- Melhor organização da sidebar
+
+### Docker Support
+- Dockerfile pronto para produção
+- Docker Compose com Ollama integrado
+- Volumes para persistência de dados
+- Network configurada para comunicação entre serviços
+
+### Qualidade de Código
+- Cobertura de testes com pytest-cov
+- Documentação completa
+- Pronto para deploy
 
 ## 🤝 Contribuindo
 

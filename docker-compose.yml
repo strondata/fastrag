@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # Ollama LLM Service
+  ollama:
+    image: ollama/ollama:latest
+    container_name: fastrag-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - fastrag-network
+
+  # FastRAG Application
+  app:
+    build: .
+    container_name: fastrag-app
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+      - ./chroma_data:/app/chroma_data
+      - ./logs:/app/logs
+    env_file:
+      - .env
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - CHROMA_PERSIST_DIRECTORY=/app/chroma_data
+      - DATA_DIR=/app/data
+      - LOGS_DIR=/app/logs
+    depends_on:
+      - ollama
+    restart: unless-stopped
+    networks:
+      - fastrag-network
+
+volumes:
+  ollama_models:
+    driver: local
+
+networks:
+  fastrag-network:
+    driver: bridge
