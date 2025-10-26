@@ -1,0 +1,231 @@
+version: '3.8'
+
+# ==============================================================================
+# FastRAG Microservices Architecture
+# ==============================================================================
+# This docker-compose file implements a production-ready microservices
+# architecture for the FastRAG framework, separating concerns between:
+# - Ingestion Service: Handles document processing and embedding (write operations)
+# - Inference Service: Handles user queries and RAG responses (read operations)
+# - Vector Database: Stores and retrieves document embeddings
+# - LLM Service: Provides language model capabilities
+# ==============================================================================
+
+services:
+  # ==============================================================================
+  # Ingestion Service - Document Processing Pipeline
+  # ==============================================================================
+  # Responsible for:
+  # - Loading documents from various sources (S3, local files, APIs)
+  # - Chunking and embedding documents
+  # - Writing to vector database
+  # Security: Write-only access to vector DB, no user-facing endpoints
+  # Scaling: Can be run as batch jobs or event-driven (e.g., S3 upload triggers)
+  # ==============================================================================
+  ingestion-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.ingestion
+    container_name: fastrag-ingestion
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - VECTOR_DB_URL=http://qdrant:6333
+      - DATA_DIR=/app/data
+      - LOGS_DIR=/app/logs
+      - OLLAMA_HOST=http://ollama:11434
+      # S3 configuration (if using cloud storage)
+      # - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      # - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      # - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+    depends_on:
+      - qdrant
+      - ollama
+    restart: "no"  # Run on-demand or via cron/scheduler
+    networks:
+      - fastrag-network
+    # Can be triggered manually or via events
+    # Example: docker-compose run ingestion-service python ingest.py
+
+  # ==============================================================================
+  # Inference Service - User-Facing API
+  # ==============================================================================
+  # Responsible for:
+  # - Receiving user queries via REST API
+  # - Retrieving relevant documents from vector DB
+  # - Generating responses using LLM
+  # Security: Read-only access to vector DB, rate-limited API
+  # Scaling: Horizontal scaling with load balancer
+  # ==============================================================================
+  inference-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.inference
+    container_name: fastrag-inference
+    ports:
+      - "8000:8000"  # FastAPI endpoint
+    environment:
+      - VECTOR_DB_URL=http://qdrant:6333
+      - OLLAMA_HOST=http://ollama:11434
+      - LLM_API_KEY=${OPENAI_API_KEY}  # If using external LLM
+      - LOG_LEVEL=INFO
+      - MAX_WORKERS=4
+    depends_on:
+      - qdrant
+      - ollama
+    restart: unless-stopped
+    networks:
+      - fastrag-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    # Can be scaled horizontally
+    # Example: docker-compose up --scale inference-service=3
+
+  # ==============================================================================
+  # Streamlit UI Service
+  # ==============================================================================
+  # Responsible for:
+  # - Providing web interface for users
+  # - Communicating with inference service
+  # Security: Public-facing, session management
+  # ==============================================================================
+  streamlit-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastrag-ui
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - INFERENCE_API_URL=http://inference-service:8000
+      - OLLAMA_HOST=http://ollama:11434
+    depends_on:
+      - inference-service
+    restart: unless-stopped
+    networks:
+      - fastrag-network
+
+  # ==============================================================================
+  # Qdrant Vector Database
+  # ==============================================================================
+  # Responsible for:
+  # - Storing document embeddings
+  # - Vector similarity search
+  # - Persistence of indexed documents
+  # ==============================================================================
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: fastrag-qdrant
+    ports:
+      - "6333:6333"  # HTTP API
+      - "6334:6334"  # gRPC (optional)
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT_LOG_LEVEL=INFO
+    restart: unless-stopped
+    networks:
+      - fastrag-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==============================================================================
+  # Ollama LLM Service
+  # ==============================================================================
+  # Responsible for:
+  # - Running local language models
+  # - Providing inference for both ingestion and inference services
+  # ==============================================================================
+  ollama:
+    image: ollama/ollama:latest
+    container_name: fastrag-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - fastrag-network
+    # GPU support (uncomment if using GPU)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  # ==============================================================================
+  # Redis Cache (Optional - for performance)
+  # ==============================================================================
+  # Responsible for:
+  # - Caching frequently accessed embeddings
+  # - Session management
+  # - Rate limiting counters
+  # ==============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: fastrag-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - fastrag-network
+    command: redis-server --appendonly yes
+
+  # ==============================================================================
+  # Nginx Load Balancer (Optional - for production)
+  # ==============================================================================
+  # Responsible for:
+  # - Load balancing across multiple inference services
+  # - SSL/TLS termination
+  # - Rate limiting
+  # ==============================================================================
+  nginx:
+    image: nginx:alpine
+    container_name: fastrag-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - inference-service
+      - streamlit-ui
+    restart: unless-stopped
+    networks:
+      - fastrag-network
+
+# ==============================================================================
+# Volumes - Data Persistence
+# ==============================================================================
+volumes:
+  qdrant_storage:
+    driver: local
+  ollama_models:
+    driver: local
+  redis_data:
+    driver: local
+
+# ==============================================================================
+# Networks - Service Communication
+# ==============================================================================
+networks:
+  fastrag-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
