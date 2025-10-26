@@ -8,13 +8,13 @@ import logging
 from pathlib import Path
 from io import BytesIO
 
-from rag_chatbot.core import RAGChatbot
-from rag_chatbot.components.loaders import UniversalLoader
-from rag_chatbot.components.embedders import MiniLMEmbedder
-from rag_chatbot.components.vector_stores import ChromaVectorStore
-from rag_chatbot.components.llms import OllamaLLM
-from rag_chatbot.components.text_splitters import RecursiveCharacterTextSplitter
-from rag_chatbot.config import (
+from src.rag_chatbot.core import RAGChatbot
+from src.rag_chatbot.components.loaders import UniversalLoader
+from src.rag_chatbot.components.embedders import MiniLMEmbedder
+from src.rag_chatbot.components.vector_stores import ChromaVectorStore
+from src.rag_chatbot.components.llms import OllamaLLM
+from src.rag_chatbot.components.text_splitters import RecursiveCharacterTextSplitter
+from src.rag_chatbot.config import (
     DEFAULT_LLM_MODEL, 
     CHROMA_PERSIST_DIRECTORY,
     CHUNK_SIZE,

@@ -5,8 +5,8 @@ from typing import List
 
 from sentence_transformers import SentenceTransformer
 
-from rag_chatbot.interfaces import IEmbeddingModel
-from rag_chatbot.config import DEFAULT_EMBEDDING_MODEL
+from ..interfaces import IEmbeddingModel
+from ..config import DEFAULT_EMBEDDING_MODEL
 
 logger = logging.getLogger(__name__)
 

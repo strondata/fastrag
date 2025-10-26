@@ -5,8 +5,8 @@ import hashlib
 from typing import List
 import chromadb
 
-from rag_chatbot.interfaces import IVectorStore, Documento
-from rag_chatbot.config import DEFAULT_COLLECTION_NAME, CHROMA_PERSIST_DIRECTORY
+from ..interfaces import IVectorStore, Documento
+from ..config import DEFAULT_COLLECTION_NAME, CHROMA_PERSIST_DIRECTORY
 
 logger = logging.getLogger(__name__)
 

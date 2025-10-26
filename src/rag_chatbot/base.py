@@ -6,7 +6,7 @@ enabling modular, composable, and testable RAG pipelines.
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
-from rag_chatbot.interfaces import Documento
+from .interfaces import Documento
 
 
 class BaseComponent(ABC):

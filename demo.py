@@ -5,10 +5,10 @@ Este script demonstra o funcionamento do sistema RAG usando MockLLM,
 que não requer Ollama instalado.
 """
 
-from rag_chatbot.core import RAGChatbot
-from rag_chatbot.components.loaders import FolderLoader
-from rag_chatbot.components.llms import MockLLM
-from rag_chatbot.interfaces import IEmbeddingModel, IVectorStore, Documento
+from src.rag_chatbot.core import RAGChatbot
+from src.rag_chatbot.components.loaders import FolderLoader
+from src.rag_chatbot.components.llms import MockLLM
+from src.rag_chatbot.interfaces import IEmbeddingModel, IVectorStore, Documento
 from typing import List
 
 

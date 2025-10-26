@@ -8,8 +8,8 @@ try:
 except ImportError:
     ollama = None
 
-from rag_chatbot.interfaces import ILocalLLM
-from rag_chatbot.config import DEFAULT_LLM_MODEL, DEFAULT_MULTIMODAL_LLM_MODEL, OLLAMA_HOST
+from ..interfaces import ILocalLLM
+from ..config import DEFAULT_LLM_MODEL, DEFAULT_MULTIMODAL_LLM_MODEL, OLLAMA_HOST
 
 logger = logging.getLogger(__name__)
 

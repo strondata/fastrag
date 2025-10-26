@@ -4,7 +4,7 @@ import logging
 import base64
 from typing import List, Dict, Any, Optional
 
-from rag_chatbot.interfaces import (
+from .interfaces import (
     IDocumentLoader,
     IEmbeddingModel,
     IVectorStore,
@@ -12,7 +12,7 @@ from rag_chatbot.interfaces import (
     ITextSplitter,
     Documento
 )
-from rag_chatbot.config import DEFAULT_TOP_K
+from .config import DEFAULT_TOP_K
 
 logger = logging.getLogger(__name__)
 

@@ -10,24 +10,24 @@ def check_imports():
     
     try:
         # Verificar interfaces
-        from rag_chatbot.interfaces import (
+        from src.rag_chatbot.interfaces import (
             IDocumentLoader, IEmbeddingModel, IVectorStore, ILocalLLM, Documento
         )
         print("✅ Interfaces importadas com sucesso")
         
         # Verificar core
-        from rag_chatbot.core import RAGChatbot
+        from src.rag_chatbot.core import RAGChatbot
         print("✅ Core (RAGChatbot) importado com sucesso")
         
         # Verificar config
-        from rag_chatbot.config import DEFAULT_EMBEDDING_MODEL, DEFAULT_LLM_MODEL
+        from src.rag_chatbot.config import DEFAULT_EMBEDDING_MODEL, DEFAULT_LLM_MODEL
         print(f"✅ Config importado (LLM: {DEFAULT_LLM_MODEL}, Embedder: {DEFAULT_EMBEDDING_MODEL})")
         
         # Verificar components
-        from rag_chatbot.components.loaders import FolderLoader
+        from src.rag_chatbot.components.loaders import FolderLoader
         print("✅ FolderLoader importado")
         
-        from rag_chatbot.components.llms import MockLLM
+        from src.rag_chatbot.components.llms import MockLLM
         print("✅ MockLLM importado")
         
         print("\n✨ Estrutura básica do código está correta!")
@@ -45,8 +45,12 @@ def check_structure():
     print("\n🔍 Verificando estrutura de pastas...")
     
     required_paths = [
-        "rag_chatbot",
-        "rag_chatbot/components",
+        "src/rag_chatbot",
+        "src/rag_chatbot/components",
+        "src/rag_chatbot/advanced_rag",
+        "src/rag_chatbot/agents",
+        "src/rag_chatbot/orchestration",
+        "entrypoints",
         "tests",
         "app.py",
         "requirements.txt",
