@@ -96,8 +96,11 @@ class TestChromaVectorStore:
     
     @pytest.fixture
     def store(self):
-        """Cria uma instância in-memory do vector store."""
-        return ChromaVectorStore(collection_name="test_collection")
+        """Cria uma instância in-memory do vector store com nome único."""
+        import uuid
+        # Usar nome único para evitar conflito entre testes
+        unique_name = f"test_collection_{uuid.uuid4().hex[:8]}"
+        return ChromaVectorStore(collection_name=unique_name)
     
     def test_add_and_search(self, store):
         """Testa adição e busca de documentos."""
@@ -129,9 +132,14 @@ class TestChromaVectorStore:
         store.add([], [])
         # Não deve causar erro
     
-    def test_search_empty_store(self, store):
+    def test_search_empty_store(self):
         """Testa busca em store vazio."""
-        results = store.search([0.1, 0.2, 0.3], k=5)
+        import uuid
+        # Criar store com nome único para garantir que está vazio
+        unique_name = f"test_empty_{uuid.uuid4().hex[:8]}"
+        empty_store = ChromaVectorStore(collection_name=unique_name)
+        
+        results = empty_store.search([0.1, 0.2, 0.3], k=5)
         
         assert len(results) == 0
 
@@ -176,11 +184,14 @@ class TestIntegration:
     def test_full_rag_flow(self, temp_data_dir):
         """Testa o fluxo completo: carregar -> embedar -> armazenar -> buscar."""
         from rag_chatbot.core import RAGChatbot
+        import uuid
         
         # Componentes reais (exceto LLM que usa mock)
         loader = FolderLoader()
         embedder = MiniLMEmbedder()
-        store = ChromaVectorStore(collection_name="integration_test")
+        # Usar nome único para evitar conflito entre execuções
+        unique_name = f"integration_test_{uuid.uuid4().hex[:8]}"
+        store = ChromaVectorStore(collection_name=unique_name)
         llm = MockLLM(default_response="O cachorro é marrom.")
         
         # Criar chatbot
