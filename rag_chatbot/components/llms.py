@@ -9,7 +9,7 @@ except ImportError:
     ollama = None
 
 from rag_chatbot.interfaces import ILocalLLM
-from rag_chatbot.config import DEFAULT_LLM_MODEL
+from rag_chatbot.config import DEFAULT_LLM_MODEL, OLLAMA_HOST
 
 logger = logging.getLogger(__name__)
 
@@ -31,12 +31,19 @@ class OllamaLLM(ILocalLLM):
             raise ImportError("Pacote 'ollama' não encontrado")
         
         self.model_name = model_name
-        logger.info(f"LLM Local ({model_name}) configurado.")
+        
+        # Configurar cliente Ollama com host customizado se especificado
+        if OLLAMA_HOST:
+            self.client = ollama.Client(host=OLLAMA_HOST)
+            logger.info(f"LLM Local ({model_name}) configurado com host: {OLLAMA_HOST}")
+        else:
+            self.client = ollama.Client()
+            logger.info(f"LLM Local ({model_name}) configurado com host padrão.")
         
         # Verificar se o modelo está disponível (opcional)
         try:
             # Tentar listar modelos para verificar conexão
-            models = ollama.list()
+            models = self.client.list()
             logger.debug(f"Ollama conectado. Modelos disponíveis verificados.")
         except Exception as e:
             logger.warning(f"Não foi possível verificar conexão com Ollama: {e}")
@@ -54,7 +61,7 @@ class OllamaLLM(ILocalLLM):
         logger.debug(f"Gerando resposta com modelo {self.model_name}")
         
         try:
-            response = ollama.generate(
+            response = self.client.generate(
                 model=self.model_name,
                 prompt=prompt,
                 stream=False

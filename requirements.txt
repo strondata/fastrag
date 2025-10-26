@@ -3,3 +3,5 @@ chromadb>=0.4.15
 sentence-transformers>=2.2.2
 ollama>=0.1.0
 pytest>=7.4.0
+python-dotenv>=1.0.0
+pytest-cov>=4.1.0
