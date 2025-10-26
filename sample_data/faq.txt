@@ -1,0 +1,64 @@
+PERGUNTAS FREQUENTES - FastRAG v3.0
+
+P: Como instalar o FastRAG?
+R: Primeiro, instale as dependências com 'pip install -r requirements.txt'. Depois, certifique-se de ter o Ollama instalado e rodando. Para modelos multimodais, execute 'ollama pull llava'.
+
+P: Quais formatos de arquivo são suportados?
+R: O FastRAG v3.0 suporta arquivos TXT, MD (Markdown), PDF e DOCX. Todos são processados automaticamente pelo UniversalLoader.
+
+P: Como funciona a divisão de documentos em chunks?
+R: O RecursiveCharacterTextSplitter divide documentos em fragmentos de 1000 caracteres (configurável) com 200 caracteres de sobreposição. A divisão respeita parágrafos e estrutura do texto.
+
+P: O que é análise multimodal?
+R: É a capacidade de processar imagens junto com texto. Você pode enviar uma foto de um gráfico ou diagrama e fazer perguntas sobre ele. O modelo llava analisa a imagem em conjunto com o contexto do RAG.
+
+P: Como usar a memória conversacional?
+R: Basta fazer perguntas normalmente. O sistema automaticamente mantém o histórico da conversa e usa esse contexto para responder perguntas de acompanhamento.
+
+P: Posso usar modelos diferentes do llama3?
+R: Sim! Você pode configurar qualquer modelo disponível no Ollama através da variável DEFAULT_LLM_MODEL no arquivo .env.
+
+P: Como melhorar a precisão das respostas?
+R: Algumas dicas: (1) Ajuste o tamanho dos chunks para seu tipo de documento, (2) Aumente o número de fontes recuperadas (DEFAULT_TOP_K), (3) Organize bem seus documentos com informações claras e estruturadas.
+
+P: Os dados são enviados para serviços externos?
+R: Não! O FastRAG é 100% local. Seus documentos e conversas permanecem no seu computador. Usamos o Ollama para executar modelos localmente.
+
+P: Como funciona a persistência dos dados?
+R: Os embeddings são salvos automaticamente no ChromaDB no diretório configurado em CHROMA_PERSIST_DIRECTORY. Você não precisa re-processar os documentos toda vez que iniciar o sistema.
+
+P: Posso processar documentos muito grandes?
+R: Sim, a divisão em chunks foi projetada exatamente para isso. Documentos grandes são automaticamente divididos em partes menores e processadas eficientemente.
+
+P: Como verificar quais fontes foram usadas em uma resposta?
+R: Clique em "Ver fontes utilizadas" abaixo de qualquer resposta do assistente. Você verá os chunks específicos que foram recuperados, incluindo arquivo, caminho e índice do chunk.
+
+P: O sistema funciona sem conexão com a internet?
+R: Sim! Após baixar os modelos do Ollama, tudo funciona offline. Você só precisa de internet para baixar as dependências iniciais e os modelos.
+
+P: Como adicionar novos documentos à base de conhecimento?
+R: Coloque os arquivos na pasta configurada (padrão: ./data) e clique em "Alimentar RAG" na aba de gerenciamento. Os novos documentos serão processados e indexados.
+
+P: Posso usar o FastRAG em produção?
+R: Sim! O sistema foi projetado com persistência, testes automatizados e arquitetura modular. Use Docker para facilitar o deployment.
+
+P: Qual o tamanho máximo de arquivo suportado?
+R: Não há limite fixo, mas arquivos muito grandes (>100MB) podem levar mais tempo para processar. A divisão em chunks garante que mesmo arquivos grandes sejam manuseados eficientemente.
+
+P: Como configurar o overlap entre chunks?
+R: Edite a variável CHUNK_OVERLAP no arquivo .env. O overlap ajuda a preservar contexto entre chunks consecutivos. Valores típicos: 10-20% do chunk size.
+
+P: Preciso de GPU para rodar o FastRAG?
+R: Não é obrigatório, mas uma GPU acelera significativamente a geração de respostas pelo LLM. O Ollama detecta e usa GPU automaticamente se disponível.
+
+P: Como atualizar documentos já indexados?
+R: Atualmente, você pode re-alimentar o RAG. O ChromaDB usa upsert, então documentos duplicados são atualizados automaticamente baseado no ID.
+
+P: Posso integrar o FastRAG com minha aplicação?
+R: Sim! O core do RAGChatbot é uma classe Python standalone que pode ser importada e usada em qualquer aplicação Python. A interface Streamlit é apenas uma das possíveis frontends.
+
+P: Como debugar problemas de recuperação?
+R: Use a funcionalidade "Inspecionar Fontes" na aba de gerenciamento. Ela mostra quais chunks seriam recuperados para uma pergunta sem chamar o LLM.
+
+P: O sistema funciona em outros idiomas além de português?
+R: Sim! Os modelos de embedding e LLM suportam múltiplos idiomas. Os prompts estão em português mas você pode alterá-los no código.
