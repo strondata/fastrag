@@ -92,5 +92,4 @@ Click "View sources used" to see:
 
 - These files contain comprehensive information about FastRAG and RAG systems
 - They are designed to work well together for cross-referencing
-- Total size is moderate (~60KB) for quick processing
 - Content is in Portuguese to match the application's default language

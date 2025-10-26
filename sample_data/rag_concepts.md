@@ -30,13 +30,14 @@ Converte texto em representações vetoriais:
 - Dimensão típica: 384 a 1536 dimensões
 - Exemplos: sentence-transformers, OpenAI embeddings
 
-### 4. Vector Store (Armazenamento Vetorial)
+### Vector Stores
 
 Banco de dados otimizado para busca de similaridade:
 - Indexação eficiente de vetores
 - Busca rápida por proximidade
 - Persistência de dados
-- Exemplos: ChromaDB, Pinecone, Weaviate, FAISS
+- **FastRAG usa**: ChromaDB
+- **Outras opções no ecossistema**: Pinecone, Weaviate, FAISS
 
 ### 5. LLM (Large Language Model)
 

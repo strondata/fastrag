@@ -52,7 +52,7 @@ P: Preciso de GPU para rodar o FastRAG?
 R: Não é obrigatório, mas uma GPU acelera significativamente a geração de respostas pelo LLM. O Ollama detecta e usa GPU automaticamente se disponível.
 
 P: Como atualizar documentos já indexados?
-R: Atualmente, você pode re-alimentar o RAG. O ChromaDB usa upsert, então documentos duplicados são atualizados automaticamente baseado no ID.
+R: Para atualizar documentos, você pode re-alimentar o RAG. Os documentos serão reprocessados e indexados. Note que documentos antigos permanecerão no índice junto com os novos - para uma limpeza completa, você pode deletar o diretório chroma_data e re-indexar tudo.
 
 P: Posso integrar o FastRAG com minha aplicação?
 R: Sim! O core do RAGChatbot é uma classe Python standalone que pode ser importada e usada em qualquer aplicação Python. A interface Streamlit é apenas uma das possíveis frontends.

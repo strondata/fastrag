@@ -10,8 +10,8 @@ O FastRAG v3.0 introduz capacidades avançadas de processamento e análise, tran
 
 O sistema agora divide automaticamente documentos grandes em chunks (fragmentos) menores, melhorando significativamente a precisão das respostas:
 
-- **Chunk Size**: 1000 caracteres por padrão
-- **Overlap**: 200 caracteres de sobreposição entre chunks
+- **Chunk Size**: 1000 caracteres por padrão (configurável via `CHUNK_SIZE`)
+- **Overlap**: 200 caracteres de sobreposição entre chunks (configurável via `CHUNK_OVERLAP`)
 - **Algoritmo**: Divisão recursiva por parágrafos, linhas e espaços
 - **Rastreamento**: Cada chunk mantém referência ao documento original
 
