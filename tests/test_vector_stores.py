@@ -12,7 +12,7 @@ class TestChromaVectorStore:
     @pytest.fixture
     def mock_chroma_client(self):
         """Mock ChromaDB client."""
-        with patch('rag_chatbot.components.vector_stores.chromadb.PersistentClient') as mock:
+        with patch('src.rag_chatbot.components.vector_stores.chromadb.PersistentClient') as mock:
             mock_instance = MagicMock()
             mock_collection = MagicMock()
             mock_instance.get_or_create_collection.return_value = mock_collection

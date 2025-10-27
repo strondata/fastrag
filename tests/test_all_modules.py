@@ -60,7 +60,7 @@ class TestMemory:
         assert memory.content == "Test memory"
         assert "id" in memory.metadata
     
-    @patch('rag_chatbot.components.embedders.SentenceTransformer')
+    @patch('src.rag_chatbot.components.embedders.SentenceTransformer')
     def test_memory_stream(self, mock_st, tmpdir):
         """Test MemoryStream functionality."""
         import numpy as np
@@ -108,7 +108,7 @@ class TestRetrieval:
         
         assert isinstance(results, list)
     
-    @patch('rag_chatbot.components.embedders.SentenceTransformer')
+    @patch('src.rag_chatbot.components.embedders.SentenceTransformer')
     def test_hybrid_retriever(self, mock_st, tmpdir):
         """Test Hybrid retriever."""
         import numpy as np
@@ -232,7 +232,7 @@ class TestCompression:
 class TestChunking:
     """Tests for semantic chunking."""
     
-    @patch('rag_chatbot.components.embedders.SentenceTransformer')
+    @patch('src.rag_chatbot.components.embedders.SentenceTransformer')
     def test_semantic_chunker(self, mock_st):
         """Test semantic chunker."""
         import numpy as np
@@ -256,7 +256,7 @@ class TestChunking:
 class TestPipeline:
     """Tests for RAG pipeline."""
     
-    @patch('rag_chatbot.components.embedders.SentenceTransformer')
+    @patch('src.rag_chatbot.components.embedders.SentenceTransformer')
     def test_pipeline(self, mock_st, tmpdir):
         """Test RAG pipeline."""
         import numpy as np
@@ -299,7 +299,7 @@ class TestTools:
         result = calc.use(expression="2 + 2")
         assert "4" in str(result)
     
-    @patch('rag_chatbot.components.embedders.SentenceTransformer')
+    @patch('src.rag_chatbot.components.embedders.SentenceTransformer')
     def test_rag_tool(self, mock_st, tmpdir):
         """Test RAG tool."""
         import numpy as np

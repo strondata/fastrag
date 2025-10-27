@@ -11,7 +11,7 @@ class TestOllamaLLM:
     @pytest.fixture
     def mock_ollama_client(self):
         """Mock ollama client."""
-        with patch('rag_chatbot.components.llms.ollama.Client') as mock:
+        with patch('src.rag_chatbot.components.llms.ollama.Client') as mock:
             mock_instance = MagicMock()
             mock.return_value = mock_instance
             yield mock_instance
