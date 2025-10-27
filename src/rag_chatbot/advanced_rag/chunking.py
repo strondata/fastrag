@@ -8,8 +8,8 @@ import re
 import logging
 from typing import List
 import numpy as np
-from rag_chatbot.base import BaseChunker
-from rag_chatbot.interfaces import IEmbeddingModel
+from ..base import BaseChunker
+from ..interfaces import IEmbeddingModel
 
 logger = logging.getLogger(__name__)
 

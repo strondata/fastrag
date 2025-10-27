@@ -7,8 +7,8 @@ to solve complex tasks by iteratively thinking and using tools.
 import logging
 import re
 from typing import List, Dict, Any, Optional
-from rag_chatbot.tools import BaseTool
-from rag_chatbot.interfaces import ILocalLLM
+from .tools import BaseTool
+from ..interfaces import ILocalLLM
 
 logger = logging.getLogger(__name__)
 

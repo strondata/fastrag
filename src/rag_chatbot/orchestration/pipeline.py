@@ -6,8 +6,8 @@ RAG workflows in a declarative manner.
 
 import logging
 from typing import Optional, List
-from rag_chatbot.base import BaseRetriever, BaseReRanker, BaseGenerator
-from rag_chatbot.interfaces import Documento
+from ..base import BaseRetriever, BaseReRanker, BaseGenerator
+from ..interfaces import Documento
 
 logger = logging.getLogger(__name__)
 

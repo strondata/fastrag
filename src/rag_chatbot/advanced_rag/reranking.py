@@ -6,8 +6,8 @@ the precision of retrieved documents.
 
 import logging
 from typing import List
-from rag_chatbot.base import BaseReRanker
-from rag_chatbot.interfaces import Documento
+from ..base import BaseReRanker
+from ..interfaces import Documento
 
 logger = logging.getLogger(__name__)
 

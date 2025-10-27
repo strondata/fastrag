@@ -14,9 +14,9 @@ class TestAgent:
     
     def test_agent_with_basic_tool(self):
         """Test agent initialization and basic functionality."""
-        from rag_chatbot.agent import Agent
-        from rag_chatbot.tools import CalculatorTool
-        from rag_chatbot.components.llms import MockLLM
+        from src.rag_chatbot.agents.agent import Agent
+        from src.rag_chatbot.agents.tools import CalculatorTool
+        from src.rag_chatbot.components.llms import MockLLM
         
         llm = MockLLM(default_response="Thought: Calculate\nFinal Answer: 4")
         tools = [CalculatorTool()]
@@ -28,9 +28,9 @@ class TestAgent:
     
     def test_agent_run(self):
         """Test agent execution."""
-        from rag_chatbot.agent import Agent
-        from rag_chatbot.tools import CalculatorTool
-        from rag_chatbot.components.llms import MockLLM
+        from src.rag_chatbot.agents.agent import Agent
+        from src.rag_chatbot.agents.tools import CalculatorTool
+        from src.rag_chatbot.components.llms import MockLLM
         
         llm = MockLLM(default_response="Thought: Done\nFinal Answer: Result")
         agent = Agent(llm=llm, tools=[CalculatorTool()])
@@ -48,7 +48,7 @@ class TestMemory:
     
     def test_memory_creation(self):
         """Test creating a memory object."""
-        from rag_chatbot.memory import Memory
+        from src.rag_chatbot.agents.memory import Memory
         
         memory = Memory(
             content="Test memory",
@@ -60,14 +60,14 @@ class TestMemory:
         assert memory.content == "Test memory"
         assert "id" in memory.metadata
     
-    @patch('rag_chatbot.components.embedders.SentenceTransformer')
+    @patch('src.rag_chatbot.components.embedders.SentenceTransformer')
     def test_memory_stream(self, mock_st, tmpdir):
         """Test MemoryStream functionality."""
         import numpy as np
-        from rag_chatbot.memory import MemoryStream
-        from rag_chatbot.components.embedders import MiniLMEmbedder
-        from rag_chatbot.components.vector_stores import ChromaVectorStore
-        from rag_chatbot.components.llms import MockLLM
+        from src.rag_chatbot.agents.memory import MemoryStream
+        from src.rag_chatbot.components.embedders import MiniLMEmbedder
+        from src.rag_chatbot.components.vector_stores import ChromaVectorStore
+        from src.rag_chatbot.components.llms import MockLLM
         
         # Setup mocks
         mock_model = Mock()
@@ -95,8 +95,8 @@ class TestRetrieval:
     
     def test_bm25_retriever(self):
         """Test BM25 retriever."""
-        from rag_chatbot.retrieval import BM25Retriever
-        from rag_chatbot.interfaces import Documento
+        from src.rag_chatbot.advanced_rag.retrieval import BM25Retriever
+        from src.rag_chatbot.interfaces import Documento
         
         docs = [
             Documento("Python programming language", {"id": "1"}),
@@ -108,14 +108,14 @@ class TestRetrieval:
         
         assert isinstance(results, list)
     
-    @patch('rag_chatbot.components.embedders.SentenceTransformer')
+    @patch('src.rag_chatbot.components.embedders.SentenceTransformer')
     def test_hybrid_retriever(self, mock_st, tmpdir):
         """Test Hybrid retriever."""
         import numpy as np
-        from rag_chatbot.retrieval import HybridRetriever, BM25Retriever, VectorRetriever
-        from rag_chatbot.components.embedders import MiniLMEmbedder
-        from rag_chatbot.components.vector_stores import ChromaVectorStore
-        from rag_chatbot.interfaces import Documento
+        from src.rag_chatbot.advanced_rag.retrieval import HybridRetriever, BM25Retriever, VectorRetriever
+        from src.rag_chatbot.components.embedders import MiniLMEmbedder
+        from src.rag_chatbot.components.vector_stores import ChromaVectorStore
+        from src.rag_chatbot.interfaces import Documento
         
         # Setup mocks
         mock_model = Mock()
@@ -143,8 +143,8 @@ class TestReranking:
     
     def test_mock_reranker(self):
         """Test MockReRanker."""
-        from rag_chatbot.reranking import MockReRanker
-        from rag_chatbot.interfaces import Documento
+        from src.rag_chatbot.advanced_rag.reranking import MockReRanker
+        from src.rag_chatbot.interfaces import Documento
         
         reranker = MockReRanker()
         docs = [
@@ -164,8 +164,8 @@ class TestRouting:
     
     def test_router_init(self):
         """Test router initialization."""
-        from rag_chatbot.routing import Router
-        from rag_chatbot.components.llms import MockLLM
+        from src.rag_chatbot.orchestration.routing import Router
+        from src.rag_chatbot.components.llms import MockLLM
         
         models = {
             "simple": MockLLM(),
@@ -178,8 +178,8 @@ class TestRouting:
     
     def test_router_route(self):
         """Test routing a query."""
-        from rag_chatbot.routing import Router
-        from rag_chatbot.components.llms import MockLLM
+        from src.rag_chatbot.orchestration.routing import Router
+        from src.rag_chatbot.components.llms import MockLLM
         
         models = {
             "simple": MockLLM(),
@@ -200,8 +200,8 @@ class TestQueryTransform:
     
     def test_query_transformer(self):
         """Test query transformer."""
-        from rag_chatbot.query_transform import QueryTransformer
-        from rag_chatbot.components.llms import MockLLM
+        from src.rag_chatbot.advanced_rag.query_transform import QueryTransformer
+        from src.rag_chatbot.components.llms import MockLLM
         
         llm = MockLLM(default_response="expanded query")
         transformer = QueryTransformer(llm=llm)
@@ -217,8 +217,8 @@ class TestCompression:
     
     def test_prompt_compressor(self):
         """Test prompt compressor."""
-        from rag_chatbot.compression import PromptCompressor
-        from rag_chatbot.components.llms import MockLLM
+        from src.rag_chatbot.advanced_rag.compression import PromptCompressor
+        from src.rag_chatbot.components.llms import MockLLM
         
         llm = MockLLM(default_response="compressed")
         compressor = PromptCompressor(llm=llm)
@@ -232,12 +232,12 @@ class TestCompression:
 class TestChunking:
     """Tests for semantic chunking."""
     
-    @patch('rag_chatbot.components.embedders.SentenceTransformer')
+    @patch('src.rag_chatbot.components.embedders.SentenceTransformer')
     def test_semantic_chunker(self, mock_st):
         """Test semantic chunker."""
         import numpy as np
-        from rag_chatbot.chunking import SemanticChunker
-        from rag_chatbot.components.embedders import MiniLMEmbedder
+        from src.rag_chatbot.advanced_rag.chunking import SemanticChunker
+        from src.rag_chatbot.components.embedders import MiniLMEmbedder
         
         # Setup mock
         mock_model = Mock()
@@ -256,15 +256,15 @@ class TestChunking:
 class TestPipeline:
     """Tests for RAG pipeline."""
     
-    @patch('rag_chatbot.components.embedders.SentenceTransformer')
+    @patch('src.rag_chatbot.components.embedders.SentenceTransformer')
     def test_pipeline(self, mock_st, tmpdir):
         """Test RAG pipeline."""
         import numpy as np
-        from rag_chatbot.pipeline import Pipeline
-        from rag_chatbot.retrieval import VectorRetriever
-        from rag_chatbot.components.embedders import MiniLMEmbedder
-        from rag_chatbot.components.vector_stores import ChromaVectorStore
-        from rag_chatbot.components.llms import MockLLM
+        from src.rag_chatbot.orchestration.pipeline import Pipeline
+        from src.rag_chatbot.advanced_rag.retrieval import VectorRetriever
+        from src.rag_chatbot.components.embedders import MiniLMEmbedder
+        from src.rag_chatbot.components.vector_stores import ChromaVectorStore
+        from src.rag_chatbot.components.llms import MockLLM
         
         # Setup mocks
         mock_model = Mock()
@@ -289,7 +289,7 @@ class TestTools:
     
     def test_calculator_tool(self):
         """Test calculator tool."""
-        from rag_chatbot.tools import CalculatorTool
+        from src.rag_chatbot.agents.tools import CalculatorTool
         
         calc = CalculatorTool()
         
@@ -299,16 +299,16 @@ class TestTools:
         result = calc.use(expression="2 + 2")
         assert "4" in str(result)
     
-    @patch('rag_chatbot.components.embedders.SentenceTransformer')
+    @patch('src.rag_chatbot.components.embedders.SentenceTransformer')
     def test_rag_tool(self, mock_st, tmpdir):
         """Test RAG tool."""
         import numpy as np
-        from rag_chatbot.tools import RAGTool
-        from rag_chatbot.pipeline import Pipeline
-        from rag_chatbot.retrieval import VectorRetriever
-        from rag_chatbot.components.embedders import MiniLMEmbedder
-        from rag_chatbot.components.vector_stores import ChromaVectorStore
-        from rag_chatbot.components.llms import MockLLM
+        from src.rag_chatbot.agents.tools import RAGTool
+        from src.rag_chatbot.orchestration.pipeline import Pipeline
+        from src.rag_chatbot.advanced_rag.retrieval import VectorRetriever
+        from src.rag_chatbot.components.embedders import MiniLMEmbedder
+        from src.rag_chatbot.components.vector_stores import ChromaVectorStore
+        from src.rag_chatbot.components.llms import MockLLM
         
         # Setup
         mock_model = Mock()
@@ -335,8 +335,8 @@ class TestCrew:
     
     def test_crew_agent_creation(self):
         """Test creating a crew agent."""
-        from rag_chatbot.crew import CrewAgent
-        from rag_chatbot.components.llms import MockLLM
+        from src.rag_chatbot.agents.crew import CrewAgent
+        from src.rag_chatbot.components.llms import MockLLM
         
         llm = MockLLM()
         agent = CrewAgent(
@@ -351,8 +351,8 @@ class TestCrew:
     
     def test_task_creation(self):
         """Test creating a task."""
-        from rag_chatbot.crew import Task, CrewAgent
-        from rag_chatbot.components.llms import MockLLM
+        from src.rag_chatbot.agents.crew import Task, CrewAgent
+        from src.rag_chatbot.components.llms import MockLLM
         
         agent = CrewAgent(MockLLM(), "Role", "Goal", "Story")
         task = Task(
@@ -365,8 +365,8 @@ class TestCrew:
     
     def test_crew_execution(self):
         """Test crew execution."""
-        from rag_chatbot.crew import Crew, CrewAgent, Task, ProcessType
-        from rag_chatbot.components.llms import MockLLM
+        from src.rag_chatbot.agents.crew import Crew, CrewAgent, Task, ProcessType
+        from src.rag_chatbot.components.llms import MockLLM
         
         agent = CrewAgent(MockLLM(), "Researcher", "Research", "Expert")
         task = Task("Research Python", "Python info", agent)
@@ -385,19 +385,19 @@ class TestBaseClasses:
     
     def test_base_component(self):
         """Test BaseComponent."""
-        from rag_chatbot.base import BaseComponent
+        from src.rag_chatbot.base import BaseComponent
         
         # BaseComponent is abstract, just check it exists
         assert hasattr(BaseComponent, 'run')
     
     def test_base_retriever(self):
         """Test BaseRetriever."""
-        from rag_chatbot.base import BaseRetriever
+        from src.rag_chatbot.base import BaseRetriever
         
         assert hasattr(BaseRetriever, 'retrieve')
     
     def test_base_chunker(self):
         """Test BaseChunker."""
-        from rag_chatbot.base import BaseChunker
+        from src.rag_chatbot.base import BaseChunker
         
         assert hasattr(BaseChunker, 'chunk')

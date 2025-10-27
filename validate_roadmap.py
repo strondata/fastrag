@@ -11,12 +11,12 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from rag_chatbot.core import RAGChatbot
-from rag_chatbot.components.loaders import FolderLoader
-from rag_chatbot.components.embedders import MiniLMEmbedder
-from rag_chatbot.components.vector_stores import ChromaVectorStore
-from rag_chatbot.components.llms import MockLLM
-from rag_chatbot.config import (
+from src.rag_chatbot.core import RAGChatbot
+from src.rag_chatbot.components.loaders import FolderLoader
+from src.rag_chatbot.components.embedders import MiniLMEmbedder
+from src.rag_chatbot.components.vector_stores import ChromaVectorStore
+from src.rag_chatbot.components.llms import MockLLM
+from src.rag_chatbot.config import (
     CHROMA_PERSIST_DIRECTORY, 
     DEFAULT_LLM_MODEL,
     DEFAULT_EMBEDDING_MODEL,
@@ -56,7 +56,7 @@ def validate_phase2_components():
     
     # Test ChromaDB with mock data
     print("✓ Testing ChromaDB with persistence:")
-    from rag_chatbot.interfaces import Documento
+    from src.rag_chatbot.interfaces import Documento
     
     store = ChromaVectorStore(collection_name="validation_test_2")
     

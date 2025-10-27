@@ -45,12 +45,8 @@ def check_structure():
     print("\n🔍 Verificando estrutura de pastas...")
     
     required_paths = [
-        "src/rag_chatbot",
-        "src/rag_chatbot/components",
-        "src/rag_chatbot/advanced_rag",
-        "src/rag_chatbot/agents",
-        "src/rag_chatbot/orchestration",
-        "entrypoints",
+        "rag_chatbot",
+        "rag_chatbot/components",
         "tests",
         "app.py",
         "requirements.txt",

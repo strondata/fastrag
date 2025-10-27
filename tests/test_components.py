@@ -5,11 +5,11 @@ import tempfile
 import shutil
 from pathlib import Path
 
-from rag_chatbot.components.loaders import FolderLoader
-from rag_chatbot.components.embedders import MiniLMEmbedder
-from rag_chatbot.components.vector_stores import ChromaVectorStore
-from rag_chatbot.components.llms import MockLLM
-from rag_chatbot.interfaces import Documento
+from src.rag_chatbot.components.loaders import FolderLoader
+from src.rag_chatbot.components.embedders import MiniLMEmbedder
+from src.rag_chatbot.components.vector_stores import ChromaVectorStore
+from src.rag_chatbot.components.llms import MockLLM
+from src.rag_chatbot.interfaces import Documento
 
 
 class TestFolderLoader:
@@ -204,7 +204,7 @@ class TestIntegration:
     
     def test_full_rag_flow(self, temp_data_dir):
         """Testa o fluxo completo: carregar -> embedar -> armazenar -> buscar."""
-        from rag_chatbot.core import RAGChatbot
+        from src.rag_chatbot.core import RAGChatbot
         import uuid
         
         # Componentes reais (exceto LLM que usa mock)

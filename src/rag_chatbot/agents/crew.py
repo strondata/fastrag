@@ -8,8 +8,8 @@ import logging
 from typing import List, Dict, Any, Optional
 from enum import Enum
 from dataclasses import dataclass
-from rag_chatbot.tools import BaseTool
-from rag_chatbot.interfaces import ILocalLLM
+from .tools import BaseTool
+from ..interfaces import ILocalLLM
 
 logger = logging.getLogger(__name__)
 

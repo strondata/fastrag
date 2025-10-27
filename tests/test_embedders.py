@@ -2,7 +2,7 @@
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-from rag_chatbot.components.embedders import MiniLMEmbedder
+from src.rag_chatbot.components.embedders import MiniLMEmbedder
 
 
 class TestMiniLMEmbedder:
@@ -11,7 +11,7 @@ class TestMiniLMEmbedder:
     @pytest.fixture
     def mock_sentence_transformer(self):
         """Mock SentenceTransformer to avoid loading actual model."""
-        with patch('rag_chatbot.components.embedders.SentenceTransformer') as mock:
+        with patch('src.rag_chatbot.components.embedders.SentenceTransformer') as mock:
             mock_instance = MagicMock()
             mock.return_value = mock_instance
             yield mock_instance

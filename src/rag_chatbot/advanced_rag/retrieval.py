@@ -7,8 +7,8 @@ and lexical (BM25) retrieval using Reciprocal Rank Fusion.
 import logging
 from typing import List, Dict
 from collections import defaultdict
-from rag_chatbot.base import BaseRetriever
-from rag_chatbot.interfaces import Documento, IVectorStore, IEmbeddingModel
+from ..base import BaseRetriever
+from ..interfaces import Documento, IVectorStore, IEmbeddingModel
 
 logger = logging.getLogger(__name__)
 

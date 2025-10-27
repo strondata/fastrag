@@ -7,7 +7,7 @@ allowing them to use various capabilities like RAG, web search, etc.
 import logging
 from abc import ABC, abstractmethod
 from typing import Any, Dict
-from rag_chatbot.pipeline import Pipeline
+from ..orchestration.pipeline import Pipeline
 
 logger = logging.getLogger(__name__)
 

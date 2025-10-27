@@ -7,8 +7,8 @@ to LLMs, reducing latency and API costs while preserving key information.
 import logging
 import re
 from typing import Optional
-from rag_chatbot.base import BaseComponent
-from rag_chatbot.interfaces import ILocalLLM
+from ..base import BaseComponent
+from ..interfaces import ILocalLLM
 
 logger = logging.getLogger(__name__)
 

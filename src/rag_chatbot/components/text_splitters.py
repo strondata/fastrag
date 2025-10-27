@@ -4,7 +4,7 @@ import logging
 from typing import List
 from copy import deepcopy
 
-from rag_chatbot.interfaces import ITextSplitter, Documento
+from ..interfaces import ITextSplitter, Documento
 
 logger = logging.getLogger(__name__)
 

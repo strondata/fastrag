@@ -5,7 +5,7 @@ import glob
 from pathlib import Path
 from typing import List
 
-from rag_chatbot.interfaces import IDocumentLoader, Documento
+from ..interfaces import IDocumentLoader, Documento
 
 logger = logging.getLogger(__name__)
 

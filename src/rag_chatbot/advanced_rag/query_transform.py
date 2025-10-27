@@ -7,8 +7,8 @@ Document Embeddings) to enhance retrieval accuracy.
 
 import logging
 from typing import List
-from rag_chatbot.base import BaseComponent
-from rag_chatbot.interfaces import ILocalLLM
+from ..base import BaseComponent
+from ..interfaces import ILocalLLM
 
 logger = logging.getLogger(__name__)
 

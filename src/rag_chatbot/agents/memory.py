@@ -9,7 +9,7 @@ import time
 import hashlib
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
-from rag_chatbot.interfaces import IEmbeddingModel, IVectorStore, ILocalLLM, Documento
+from ..interfaces import IEmbeddingModel, IVectorStore, ILocalLLM, Documento
 
 logger = logging.getLogger(__name__)
 

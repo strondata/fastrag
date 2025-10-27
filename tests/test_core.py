@@ -3,8 +3,8 @@
 import pytest
 from unittest.mock import Mock, MagicMock
 
-from rag_chatbot.core import RAGChatbot
-from rag_chatbot.interfaces import Documento
+from src.rag_chatbot.core import RAGChatbot
+from src.rag_chatbot.interfaces import Documento
 
 
 class TestRAGChatbot:

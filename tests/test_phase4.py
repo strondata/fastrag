@@ -2,9 +2,9 @@
 
 import pytest
 from unittest.mock import Mock, MagicMock
-from rag_chatbot.crew import CrewAgent, Task, Crew, ProcessType
-from rag_chatbot.routing import Router, RoutingStrategy
-from rag_chatbot.tools import BaseTool
+from src.rag_chatbot.agents.crew import CrewAgent, Task, Crew, ProcessType
+from src.rag_chatbot.orchestration.routing import Router, RoutingStrategy
+from src.rag_chatbot.agents.tools import BaseTool
 
 
 class TestCrewAgent:

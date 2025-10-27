@@ -8,8 +8,8 @@ import logging
 from typing import Dict, Optional
 from enum import Enum
 import numpy as np
-from rag_chatbot.base import BaseComponent
-from rag_chatbot.interfaces import ILocalLLM, IEmbeddingModel
+from ..base import BaseComponent
+from ..interfaces import ILocalLLM, IEmbeddingModel
 
 logger = logging.getLogger(__name__)
 
